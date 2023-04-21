@@ -24,7 +24,7 @@ function LunchViewer() {
         let food_data =
           result.data.mealServiceDietInfo[1].row[0].DDISH_NM.split("<br/>");
 
-        if (!food_data) {
+        if (result.data.RESULT.CODE === "INFO-200") {
           food_data = "정보가 없습니다.";
         }
         setFL(food_data);
