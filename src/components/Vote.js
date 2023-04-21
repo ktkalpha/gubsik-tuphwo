@@ -9,7 +9,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
-//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
 import { collection, getDocs, doc, setDoc } from "firebase/firestore";
 import db from "../firebase.js";
 import { useEffect, useState } from "react";
