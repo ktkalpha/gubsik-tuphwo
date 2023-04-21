@@ -21,12 +21,13 @@ function LunchViewer() {
         }
       )
       .then((result) => {
-        let food_data =
-          result.data.mealServiceDietInfo[1].row[0].DDISH_NM.split("<br/>");
-
         if (result.data.RESULT.CODE === "INFO-200") {
           food_data = "정보가 없습니다.";
         }
+
+        let food_data =
+          result.data.mealServiceDietInfo[1].row[0].DDISH_NM.split("<br/>");
+
         setFL(food_data);
       })
       .catch((err) => {
