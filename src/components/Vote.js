@@ -15,7 +15,9 @@ import { useEffect, useState } from "react";
 function Vote() {
   const [votes, setVotes] = useState(null);
   const [isVote, setIsVote] = useState(
-    JSON.parse(localStorage.getItem("is_can_vote"))
+    localStorage.getItem("is_can_vote")
+      ? JSON.parse(localStorage.getItem("is_can_vote"))
+      : true
   );
 
   async function getVotes(db) {
