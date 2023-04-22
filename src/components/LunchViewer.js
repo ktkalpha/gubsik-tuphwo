@@ -15,13 +15,14 @@ function LunchViewer() {
         "https://open.neis.go.kr/hub/mealServiceDietInfo?ATPT_OFCDC_SC_CODE=H10&SD_SCHUL_CODE=7501034&Type=json&",
         {
           params: {
-            MLSV_YMD: Number(dateString),
+            // MLSV_YMD: Number(dateString),
+            MLSV_YMD: 20230422,
             KEY: process.env.REACT_APP_API_KEY,
           },
         }
       )
       .then((result) => {
-        if (result.data.RESULT.CODE === "INFO-200") {
+        if (result.data.RESULT?.CODE === "INFO-200") {
           setFL(["정보가 없습니다."]);
         } else {
           let food_data =

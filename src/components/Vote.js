@@ -1,9 +1,9 @@
 import {
   Box,
+  Button,
   Center,
   HStack,
   IconButton,
-  Button,
   Progress,
   Text,
   VStack,
@@ -14,6 +14,9 @@ import db from "../firebase.js";
 import { useEffect, useState } from "react";
 function Vote() {
   const [votes, setVotes] = useState(null);
+  const [isVote, setIsVote] = useState(
+    JSON.parse(localStorage.getItem("is_can_vote"))
+  );
 
   async function getVotes(db) {
     const votesCol = collection(db, "today-vote");
@@ -22,12 +25,15 @@ function Vote() {
     return voteData;
   }
   async function getTime(db) {
-    const votesCol = collection(db, "time");
-    const voteSnapshot = await getDocs(votesCol);
-    const voteData = voteSnapshot.docs.map((doc) => doc.data());
-    return voteData;
+    const timeCol = collection(db, "today-vote");
+    const timeSnapshot = await getDocs(timeCol);
+    const timeData = timeSnapshot.docs.map((doc) => doc.data());
+    return timeData;
   }
-
+  function setIVL(b) {
+    localStorage.setItem("is_can_vote", JSON.stringify(b));
+    setIsVote(b);
+  }
   async function addLike() {
     await setDoc(doc(db, "today-vote", "votes"), {
       like: votes.like + 1,
@@ -37,6 +43,7 @@ function Vote() {
       like: (votes.like += 1),
       unlike: votes.unlike,
     });
+    setIVL(false);
   }
 
   async function addUnlike() {
@@ -48,6 +55,7 @@ function Vote() {
       like: votes.like,
       unlike: (votes.unlike += 1),
     });
+    setIVL(false);
   }
   async function resetVote() {
     await setDoc(doc(db, "today-vote", "votes"), {
@@ -70,30 +78,34 @@ function Vote() {
   //   }
   useEffect(() => {
     getVotes(db).then((r) => {
-      setVotes(r[0]);
+      setVotes(r[1]);
     });
     getTime(db).then((r) => {
-      if (r !== new Date().getDate()) {
+      console.log(r[0].day, new Date().getDate());
+      if (r[0].day !== new Date().getDate()) {
         resetVote();
         setTime();
+        setIVL(true);
       }
     });
   }, []);
   return (
     <Center>
       <VStack>
-        <HStack>
-          <IconButton
-            onClick={addLike}
-            colorScheme="green"
-            icon={<CheckIcon />}
-          ></IconButton>
-          <IconButton
-            onClick={addUnlike}
-            colorScheme="red"
-            icon={<CloseIcon />}
-          ></IconButton>
-        </HStack>
+        {isVote && (
+          <HStack>
+            <IconButton
+              onClick={addLike}
+              colorScheme="green"
+              icon={<CheckIcon />}
+            ></IconButton>
+            <IconButton
+              onClick={addUnlike}
+              colorScheme="red"
+              icon={<CloseIcon />}
+            ></IconButton>
+          </HStack>
+        )}
 
         <HStack fontFamily={"Inter"}>
           <Text>{votes?.like}</Text>
