@@ -37,25 +37,30 @@ function Vote() {
     setIsVote(b);
   }
   async function addLike() {
-    await setDoc(doc(db, "today-vote", "votes"), {
-      like: votes.like + 1,
-      unlike: votes.unlike,
+    await getVotes(db).then((r) => {
+      setDoc(doc(db, "today-vote", "votes"), {
+        like: r[1].like + 1,
+        unlike: r[1].unlike,
+      });
+      setVotes({
+        like: r[1].like + 1,
+        unlike: r[1].unlike,
+      });
     });
-    setVotes({
-      like: (votes.like += 1),
-      unlike: votes.unlike,
-    });
+
     setIVL(false);
   }
 
   async function addUnlike() {
-    await setDoc(doc(db, "today-vote", "votes"), {
-      like: votes.like,
-      unlike: votes.unlike + 1,
-    });
-    setVotes({
-      like: votes.like,
-      unlike: (votes.unlike += 1),
+    await getVotes(db).then((r) => {
+      setDoc(doc(db, "today-vote", "votes"), {
+        like: r[1].like,
+        unlike: r[1].unlike + 1,
+      });
+      setVotes({
+        like: r[1].like,
+        unlike: (r[1].unlike += 1),
+      });
     });
     setIVL(false);
   }
@@ -84,10 +89,16 @@ function Vote() {
     });
     getTime(db).then((r) => {
       console.log(r[0].day, new Date().getDate());
-      if (r[0].day !== new Date().getDate()) {
-        resetVote();
+      if (
+        r[0].day !== JSON.parse(localStorage.getItem("today")) ||
+        !localStorage.getItem("today")
+      ) {
         setTime();
         setIVL(true);
+        localStorage.setItem("today", JSON.stringify(new Date().getDate()));
+      }
+      if (r[0].day !== new Date().getDate()) {
+        resetVote();
       }
     });
   }, []);
